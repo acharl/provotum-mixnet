@@ -62,7 +62,7 @@ async fn hello() -> impl Responder {
      // submit the public key share + proof
      let signer = PairSigner::<NodeTemplateRuntime, Pair>::new(sealer);
      let store_public_key_share_response =
-         store_public_key_share(&client, &signer, vote_id, pk_share).await;
+         store_public_key_share(&client, &signer, vote_id, pk_share).await.unwrap();
      println!(
          "store_public_key_share_response: {:?}",
          store_public_key_share_response.events[0].variant
