@@ -15,7 +15,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_health)
             .service(randomize_ballot)
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind(("0.0.0.0", 8081))?
     .run()
     .await
 }
