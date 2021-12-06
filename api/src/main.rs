@@ -36,7 +36,7 @@ async fn init() -> Result<Client<NodeTemplateRuntime>, Error> {
     Ok(client)
 }
 
-#[get("/")]
+#[get("/keygen")]
 async fn hello() -> impl Responder {
 
     let vote = "TEST_VOTE";
