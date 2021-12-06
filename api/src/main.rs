@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use substrate_subxt::{Client, PairSigner};
 use substrate_subxt::{ClientBuilder, Error, NodeTemplateRuntime};
 use crypto::{
@@ -10,6 +10,7 @@ use pallet_mixnet::types::{PublicKeyShare};
 use sp_keyring::{sr25519::sr25519::Pair, AccountKeyring};
 mod substrate;
 use substrate::rpc::store_public_key_share;
+use serde::{Deserialize, Serialize};
 
 
 fn get_sealer(sealer: String) -> (Pair, [u8; 32]) {
@@ -36,19 +37,22 @@ async fn init() -> Result<Client<NodeTemplateRuntime>, Error> {
     Ok(client)
 }
 
-#[get("/keygen")]
-async fn hello() -> impl Responder {
+#[derive(Serialize, Deserialize,Debug)]
+struct PostKeygenData {
+  vote: String,
+  sealer: String 
+}
 
-    let vote = "TEST_VOTE";
+#[post("/keygen")]
+async fn keygen(data: web::Json<PostKeygenData>) -> impl Responder {
     let sk_as_string = "10008";
-    let sealer = "bob";
     let client = init().await.unwrap();
 
      // create private and public key
      let (params, sk, pk) = Helper::setup_lg_system_with_sk(sk_as_string.as_bytes());
 
      // get the sealer and sealer_id
-     let (sealer, sealer_id): (Pair, [u8; 32]) = get_sealer(sealer.to_string()); // changed to &
+     let (sealer, sealer_id): (Pair, [u8; 32]) = get_sealer(data.sealer.to_string()); 
  
      // create public key share + proof
      let r = Random::get_random_less_than(&params.q());
@@ -57,7 +61,7 @@ async fn hello() -> impl Responder {
          proof: proof.clone().into(),
          pk: pk.h.to_bytes_be(),
      };
-     let vote_id = vote.as_bytes().to_vec();
+     let vote_id = data.vote.as_bytes().to_vec();
  
      // submit the public key share + proof
      let signer = PairSigner::<NodeTemplateRuntime, Pair>::new(sealer);
@@ -85,11 +89,12 @@ async fn manual_hello() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .service(hello)
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
+        .service(keygen)
     })
-    .bind("127.0.0.1:8080")?
+    .bind("127.0.0.1:8888")?
     .run()
     .await
 }
+
+
+
