@@ -81,7 +81,6 @@ pub async fn decrypt(
 
     // create private and public key
     let (params, sk, pk) = Helper::setup_lg_system_with_sk(sk_as_string.as_bytes());
-
     // get the sealer and sealer_id
     let (sealer, sealer_id): (Pair, [u8; 32]) = get_sealer(sealer);
 
