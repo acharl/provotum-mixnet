@@ -73,7 +73,6 @@ async fn keygen(data: web::Json<PostKeygenData>) -> impl Responder {
      );
  
     HttpResponse::Ok().body("Hello world!")
-
 }
 
 #[post("/echo")]
