@@ -47,6 +47,8 @@ struct PostKeygenData {
 #[post("/keygen")]
 async fn keygen(data: web::Json<PostKeygenData>) -> impl Responder {
     let sk_as_string = "10008";
+    let sealer = "bob";
+    let vote = "Vote_00"
     let client = init().await.unwrap();
 
      // create private and public key
@@ -91,8 +93,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
         .service(keygen)
     })
-    .bind("127.0.0.1:8888")?
-    .run()
+    .bind(("0.0.0.0", 8888))?
+.run()
     .await
 }
 
