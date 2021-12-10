@@ -11,7 +11,6 @@ use sp_keyring::{sr25519::sr25519::Pair, AccountKeyring};
 mod substrate;
 use substrate::rpc::store_public_key_share;
 use serde::{Deserialize, Serialize};
-use std::env;
 
 
 fn get_sealer(sealer: String) -> (Pair, [u8; 32]) {
@@ -48,14 +47,14 @@ struct PostKeygenData {
 async fn keygen() -> impl Responder {
     let sk_as_string = "10008";
     let sealer = "bob";
-    let vote = "Vote_00"
+    let vote = "Vote_00";
     let client = init().await.unwrap();
 
      // create private and public key
      let (params, sk, pk) = Helper::setup_lg_system_with_sk(sk_as_string.as_bytes());
 
      // get the sealer and sealer_id
-     let (sealer, sealer_id): (Pair, [u8; 32]) = get_sealer(data.sealer.to_string()); 
+     let (sealer, sealer_id): (Pair, [u8; 32]) = get_sealer(sealer.to_string()); 
  
      // create public key share + proof
      let r = Random::get_random_less_than(&params.q());
@@ -64,7 +63,7 @@ async fn keygen() -> impl Responder {
          proof: proof.clone().into(),
          pk: pk.h.to_bytes_be(),
      };
-     let vote_id = data.vote.as_bytes().to_vec();
+     let vote_id = vote.as_bytes().to_vec();
  
      // submit the public key share + proof
      let signer = PairSigner::<NodeTemplateRuntime, Pair>::new(sealer);
