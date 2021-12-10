@@ -45,7 +45,7 @@ struct PostKeygenData {
 }
 
 #[post("/keygen")]
-async fn keygen(data: web::Json<PostKeygenData>) -> impl Responder {
+async fn keygen() -> impl Responder {
     let sk_as_string = "10008";
     let sealer = "bob";
     let vote = "Vote_00"
