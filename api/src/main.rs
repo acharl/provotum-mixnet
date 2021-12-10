@@ -11,6 +11,7 @@ use sp_keyring::{sr25519::sr25519::Pair, AccountKeyring};
 mod substrate;
 use substrate::rpc::store_public_key_share;
 use serde::{Deserialize, Serialize};
+use std::env;
 
 
 fn get_sealer(sealer: String) -> (Pair, [u8; 32]) {
