@@ -43,7 +43,7 @@ struct PostKeygenData {
   sealer: String 
 }
 
-#[post("/keygen")]
+#[get("/keygen")]
 async fn keygen() -> impl Responder {
     let sk_as_string = "10008";
     let sealer = "bob";
@@ -90,12 +90,13 @@ async fn manual_hello() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-        .service(keygen)
+            .service(keygen)
     })
-    .bind(("0.0.0.0", 8888))?
-.run()
+    .bind("127.0.0.1:8080")?
+    .run()
     .await
 }
+
 
 
 
