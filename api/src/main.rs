@@ -1,4 +1,4 @@
-use actix_web::{get, App, HttpResponse, HttpServer, Responder};
+// use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use substrate_subxt::{Client, PairSigner};
 use substrate_subxt::{ClientBuilder, Error, NodeTemplateRuntime};
 use crypto::{
@@ -11,6 +11,7 @@ use sp_keyring::{sr25519::sr25519::Pair, AccountKeyring};
 mod substrate;
 use substrate::rpc::store_public_key_share;
 use serde::{Deserialize, Serialize};
+#[macro_use] extern crate rocket;
 
 
 fn get_sealer(sealer: String) -> (Pair, [u8; 32]) {
@@ -44,7 +45,7 @@ struct PostKeygenData {
 }
 
 #[get("/keygen")]
-async fn keygen() -> impl Responder {
+async fn keygen() -> &'static str {
     let sk_as_string = "10008";
     let sealer = "bob";
     let vote = "Vote_00";
@@ -74,20 +75,21 @@ async fn keygen() -> impl Responder {
          store_public_key_share_response.events[0].variant
      );
  
-    HttpResponse::Ok().body("Hello world!")
+     "Hello, world!"
+    }
+
+#[get("/world")]              // <- route attribute
+fn world() -> &'static str {  // <- request handler
+    "hello, world!"
 }
 
-
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new()
-            .service(keygen)
-    })
-    .bind("127.0.0.1:8080")?
-    .run()
-    .await
+#[launch]
+fn rocket() -> _ {
+    rocket::build()
+    .mount("/", routes![keygen])
+    .mount("/", routes![world])
 }
+
 
 
 
