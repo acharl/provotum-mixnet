@@ -7,6 +7,7 @@ use num_bigint::BigUint;
 use num_traits::One;
 use sp_runtime::RuntimeDebug;
 use sp_std::{collections::btree_map::BTreeMap, vec::Vec};
+use serde::{Deserialize, Serialize};
 
 /// the BigCipher from the crypto crate.
 /// different types which the blockchain can handle.
@@ -338,7 +339,7 @@ pub struct Vote<AccountId> {
 }
 
 // the public key generation proof submitted by the sealer -> this prooves knowledge of a secret key that belongs to the submitted public key
-#[derive(Encode, Decode, Default, Clone, PartialEq, Eq, Debug)]
+#[derive(Serialize, Deserialize, Encode, Decode, Default, Clone, PartialEq, Eq, Debug)]
 pub struct PublicKeyShareProof {
     pub challenge: Vec<u8>,
     pub response: Vec<u8>,
@@ -363,7 +364,7 @@ impl Into<KeyGenerationProof> for PublicKeyShareProof {
 }
 
 // the public key share submitted by each sealer to generated the system's public key
-#[derive(Encode, Decode, Default, Clone, PartialEq, Eq, Debug)]
+#[derive(Serialize, Deserialize, Encode, Decode, Default, Clone, PartialEq, Eq, Debug)]
 pub struct PublicKeyShare {
     pub pk: Vec<u8>,
     pub proof: PublicKeyShareProof,

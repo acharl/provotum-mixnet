@@ -1,17 +1,12 @@
-// use actix_web::{get, App, HttpResponse, HttpServer, Responder};
+use actix_web::{web, post, App, HttpResponse, HttpServer, Responder};
 use substrate_subxt::{Client, PairSigner};
 use substrate_subxt::{ClientBuilder, Error, NodeTemplateRuntime};
-use crypto::{
-    helper::Helper,
-    proofs::{keygen::KeyGenerationProof},
-    random::Random};
 use hex_literal::hex;
 use pallet_mixnet::types::{PublicKeyShare};
 use sp_keyring::{sr25519::sr25519::Pair, AccountKeyring};
 mod substrate;
 use substrate::rpc::store_public_key_share;
 use serde::{Deserialize, Serialize};
-#[macro_use] extern crate rocket;
 
 
 fn get_sealer(sealer: String) -> (Pair, [u8; 32]) {
@@ -44,53 +39,41 @@ struct PostKeygenData {
   sealer: String 
 }
 
-#[get("/keygen")]
-async fn keygen() -> &'static str {
-    let sk_as_string = "10008";
-    let sealer = "bob";
-    let vote = "Vote_00";
+#[post("/keygen/{vote}/{sealer}")] // <- define path parameters
+async fn keygen(web::Path((vote, sealer)): web::Path<(String, String)>, pk_share: web::Json<PublicKeyShare>) -> impl Responder {
     let client = init().await.unwrap();
+    let (sealer, sealer_id): (Pair, [u8; 32]) = get_sealer(sealer.to_string()); 
 
-     // create private and public key
-     let (params, sk, pk) = Helper::setup_lg_system_with_sk(sk_as_string.as_bytes());
-
-     // get the sealer and sealer_id
-     let (sealer, sealer_id): (Pair, [u8; 32]) = get_sealer(sealer.to_string()); 
- 
-     // create public key share + proof
-     let r = Random::get_random_less_than(&params.q());
-     let proof = KeyGenerationProof::generate(&params, &sk.x, &pk.h, &r, &sealer_id);
-     let pk_share = PublicKeyShare {
-         proof: proof.clone().into(),
-         pk: pk.h.to_bytes_be(),
-     };
      let vote_id = vote.as_bytes().to_vec();
  
      // submit the public key share + proof
      let signer = PairSigner::<NodeTemplateRuntime, Pair>::new(sealer);
      let store_public_key_share_response =
-         store_public_key_share(&client, &signer, vote_id, pk_share).await.unwrap();
+         store_public_key_share(&client, &signer, vote_id, pk_share.into_inner()).await.unwrap();
      println!(
          "store_public_key_share_response: {:?}",
          store_public_key_share_response.events[0].variant
      );
  
-     "Hello, world!"
-    }
-
-#[get("/world")]              // <- route attribute
-fn world() -> &'static str {  // <- request handler
-    "hello, world!"
-}
-
-#[launch]
-fn rocket() -> _ {
-    rocket::build()
-    .mount("/", routes![keygen])
-    .mount("/", routes![world])
+     HttpResponse::Ok().body("Successfully Stored Key Share!")
 }
 
 
+#[post("/test/{vote}/{sealer}")] // <- define path parameters
+async fn index(web::Path((vote, sealer)): web::Path<(String, String)>, key_share: web::Json<PublicKeyShare>) -> impl Responder {
+    HttpResponse::Ok().body("Hello world!")
+}
 
 
-
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+        .service(keygen)
+        .service(index)
+    })
+    .bind(("0.0.0.0", 1111))?
+    .run()
+    .await
+    
+}
