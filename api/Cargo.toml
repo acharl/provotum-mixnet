@@ -24,7 +24,7 @@ surf = { version = "2.2.0" }
 clap = { version = "3.0.0-beta.2" }
 hex-literal = { version = "^0.3" }
 actix-web = "3"
-
+actix-cors = "0.5.2"
 
 # crypto library from crypto crate
 crypto = { path = "../crypto", features = ["std"] }

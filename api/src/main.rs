@@ -1,4 +1,5 @@
 use actix_web::{web,get,  post, App, HttpResponse, HttpServer, Responder, Result};
+use actix_cors::Cors;
 use substrate_subxt::{Client, PairSigner};
 use substrate_subxt::{ClientBuilder, Error, NodeTemplateRuntime};
 use hex_literal::hex;
@@ -58,14 +59,15 @@ async fn decrypt(web::Path((vote, question)): web::Path<(String, String)>) -> Re
     let vote_id = vote.as_bytes().to_vec();
     let topic_id = question.as_bytes().to_vec();
     let nr_of_shuffles = 3;
-    let encryptions: Vec<Cipher> = get_ciphers(&client, topic_id.clone(), nr_of_shuffles).await.unwrap();
-    let encryptions: Vec<BigCipher> = Wrapper(encryptions).into();
+    let raw_encryptions: Vec<Cipher> = get_ciphers(&client, topic_id.clone(), nr_of_shuffles).await.unwrap();
+    let encryptions: Vec<BigCipher> = Wrapper(raw_encryptions).into();
 
     Ok(web::Json(encryptions))
 }
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
+        let cors = Cors::new().supports_credentials();
         App::new()
         .service(keygen)
         .service(decrypt)
