@@ -2,10 +2,10 @@ use actix_web::{web,get,  post, App, HttpResponse, HttpServer, Responder, Result
 use substrate_subxt::{Client, PairSigner};
 use substrate_subxt::{ClientBuilder, Error, NodeTemplateRuntime};
 use hex_literal::hex;
-use pallet_mixnet::types::{PublicKeyShare};
+use pallet_mixnet::types::{Cipher, PublicKeyShare};
 use sp_keyring::{sr25519::sr25519::Pair, AccountKeyring};
 mod substrate;
-use substrate::rpc::store_public_key_share;
+use substrate::rpc::{get_ciphers, store_public_key_share};
 use serde::{Deserialize, Serialize};
 
 

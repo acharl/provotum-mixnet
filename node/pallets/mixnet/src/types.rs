@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 
 /// the BigCipher from the crypto crate.
 /// different types which the blockchain can handle.
-#[derive(Encode, Decode, Default, Clone, PartialEq, Eq, Debug)]
+#[derive(Deserialize, Serialize, Encode, Decode, Default, Clone, PartialEq, Eq, Debug)]
 pub struct Cipher {
     pub a: Vec<u8>,
     pub b: Vec<u8>,

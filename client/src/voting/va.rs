@@ -80,7 +80,7 @@ pub async fn change_vote_phase(vote: String, vote_phase: String) -> Result<(), E
     // create input parameters
     let vote_id = vote.as_bytes().to_vec();
     let vote_phase =
-        VotePhase::from_str(&vote_phase).expect("only valid VotePhase values should be parsed!");
+        VotePhase::from_str(&vote_phase).expect("only valid VotePhase values should be parsbed!");
 
     // update vote phase to Voting
     let response = set_vote_phase(&client, vote_id.clone(), vote_phase).await?;
