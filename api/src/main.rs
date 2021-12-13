@@ -2,7 +2,7 @@ use actix_web::{web,get,  post, App, HttpResponse, HttpServer, Responder, Result
 use substrate_subxt::{Client, PairSigner};
 use substrate_subxt::{ClientBuilder, Error, NodeTemplateRuntime};
 use hex_literal::hex;
-use pallet_mixnet::types::{Cipher, PublicKeyShare};
+use pallet_mixnet::types::{Cipher, PublicKeyShare, Wrapper};
 use sp_keyring::{sr25519::sr25519::Pair, AccountKeyring};
 mod substrate;
 use substrate::rpc::{get_ciphers, store_public_key_share};
@@ -58,7 +58,8 @@ async fn decrypt(web::Path((vote, question)): web::Path<(String, String)>) -> Re
     let vote_id = vote.as_bytes().to_vec();
     let topic_id = question.as_bytes().to_vec();
     let nr_of_shuffles = 3;
-    let encryptions: Vec<Cipher> = get_ciphers(&client, topic_id.clone(), nr_of_shuffles).await?;
+    let encryptions: Vec<Cipher> = get_ciphers(&client, topic_id.clone(), nr_of_shuffles).await.unwrap();
+    let encryptions: Vec<BigCipher> = Wrapper(encryptions).into();
 
     Ok(web::Json(encryptions))
 }
