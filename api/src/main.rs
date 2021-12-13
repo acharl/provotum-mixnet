@@ -1,4 +1,4 @@
-use actix_web::{web, post, App, HttpResponse, HttpServer, Responder};
+use actix_web::{web,get,  post, App, HttpResponse, HttpServer, Responder, Result};
 use substrate_subxt::{Client, PairSigner};
 use substrate_subxt::{ClientBuilder, Error, NodeTemplateRuntime};
 use hex_literal::hex;
@@ -33,12 +33,6 @@ async fn init() -> Result<Client<NodeTemplateRuntime>, Error> {
     Ok(client)
 }
 
-#[derive(Serialize, Deserialize,Debug)]
-struct PostKeygenData {
-  vote: String,
-  sealer: String 
-}
-
 #[post("/keygen/{vote}/{sealer}")] // <- define path parameters
 async fn keygen(web::Path((vote, sealer)): web::Path<(String, String)>, pk_share: web::Json<PublicKeyShare>) -> impl Responder {
     let client = init().await.unwrap();
@@ -58,22 +52,24 @@ async fn keygen(web::Path((vote, sealer)): web::Path<(String, String)>, pk_share
      HttpResponse::Ok().body("Successfully Stored Key Share!")
 }
 
+#[get("/decrypt/{vote}/{question}")]
+async fn decrypt(web::Path((vote, question)): web::Path<(String, String)>) -> Result<impl Responder> {
+    let client = init().await.unwrap();
+    let vote_id = vote.as_bytes().to_vec();
+    let topic_id = question.as_bytes().to_vec();
+    let nr_of_shuffles = 3;
+    let encryptions: Vec<Cipher> = get_ciphers(&client, topic_id.clone(), nr_of_shuffles).await?;
 
-#[post("/test/{vote}/{sealer}")] // <- define path parameters
-async fn index(web::Path((vote, sealer)): web::Path<(String, String)>, key_share: web::Json<PublicKeyShare>) -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
+    Ok(web::Json(encryptions))
 }
-
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
         .service(keygen)
-        .service(index)
+        .service(decrypt)
     })
     .bind(("0.0.0.0", 1111))?
     .run()
     .await
-    
 }

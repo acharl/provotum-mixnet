@@ -66,7 +66,6 @@ pub async fn keygen(vote: String, sk_as_string: String, sealer: String) -> Resul
         "store_public_key_share_response: {:?}",
         store_public_key_share_response.events[0].variant
     );
-
     Ok(())
 }
 
