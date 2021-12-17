@@ -1,18 +1,13 @@
 use actix_web::{web,get,  post, App, HttpResponse, HttpServer, Responder, Result};
-use actix_cors::Cors;
 use substrate_subxt::{Client, PairSigner};
 use substrate_subxt::{ClientBuilder, Error, NodeTemplateRuntime};
 use hex_literal::hex;
 use pallet_mixnet::types::{Cipher, PublicKeyShare, Wrapper};
 use sp_keyring::{sr25519::sr25519::Pair, AccountKeyring};
 mod substrate;
-use substrate::rpc::{get_ciphers, store_public_key_share};
-use serde::{Deserialize, Serialize};
+use substrate::rpc::{get_ciphers, store_public_key_share, submit_partial_decryptions};
 use crypto::{
-    encryption::ElGamal,
-    helper::Helper,
-    proofs::decryption::{DecryptionProof, DecryptPostBody},
-    random::Random,
+    proofs::decryption::DecryptPostBody,
     types::Cipher as BigCipher,
 };
 
@@ -89,7 +84,7 @@ async fn get_decrypt(web::Path((vote, question)): web::Path<(String, String)>) -
 #[post("/decrypt/{vote}/{question}/{sealer}")] 
 async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, String, String)>, decrypt_post_body: web::Json<DecryptPostBody>) -> impl Responder {
     // submit the partial decryption + proof
-    let client = init().await.unwrap()
+    let client = init().await.unwrap();
 
     let (sealer, sealer_id): (Pair, [u8; 32]) = get_sealer(sealer);
     let vote_id = vote.as_bytes().to_vec();
@@ -102,18 +97,17 @@ async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, St
         &signer,
         vote_id,
         topic_id,
-        decrypt_post_body.shares,
-        decrypt_post_body.proof.into(),
+        decrypt_post_body.shares.clone(),
+        decrypt_post_body.decryption_proof.clone().into(),
         nr_of_shuffles,
     )
-    .await?;
-    println!("response: {:?}", response.events[0].variant);
+    .await.unwrap();
+    HttpResponse::Ok().body("Successfully Submitted Partial Decryptions!")
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
-        let cors = Cors::new().supports_credentials();
         App::new()
         .service(keygen)
         .service(get_decrypt)
