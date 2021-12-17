@@ -88,7 +88,7 @@ pub async fn decrypt(
     let topic_id = question.as_bytes().to_vec();
     let nr_of_shuffles = 3;
     let encryptions: Vec<Cipher> = get_ciphers(&client, topic_id.clone(), nr_of_shuffles).await?;
-    let encryptions: Vec<BigCipher> = Wrapper(encryptions).into();
+    // let encryptions: Vec<BigCipher> = Wrapper(encryptions).into();
 
     // get partial decryptions
     let partial_decryptions = encryptions
