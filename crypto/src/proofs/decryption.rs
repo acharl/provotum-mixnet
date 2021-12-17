@@ -4,8 +4,15 @@ use crate::{
 };
 use alloc::vec::Vec;
 use num_bigint::BigUint;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Eq, PartialEq, Debug, Hash)]
+#[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Debug, Hash)]
+pub struct DecryptPostBody {
+    pub decryption_proof: DecryptionProof,
+    pub shares: Vec<Vec<u8>>
+} 
+
+#[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Debug, Hash)]
 pub struct DecryptionProof {
     pub challenge: BigUint,
     pub response: BigUint,

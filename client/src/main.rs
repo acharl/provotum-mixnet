@@ -22,7 +22,11 @@ fn main() {
                 let result =
                     task::spawn(create_votes(t.vote, t.question, t.nr_of_votes, t.votes)).await;
                 match result {
-                    Ok(_) => println!("successfully created {:?} votes.", t.nr_of_votes),
+                    Ok(_) => {
+                        println!();
+                        println!("successfully created {:?} votes.", t.nr_of_votes)
+                        println!();
+                    },
                     Err(err) => println!("failed to create vote: {:?}", err),
                 }
             });
