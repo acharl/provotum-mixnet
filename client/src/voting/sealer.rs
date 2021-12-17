@@ -115,7 +115,9 @@ pub async fn decrypt(
     );
 
     println!();
-    println!("PROOF I: {:?}", proof);
+    println!("CHALLENGE: {:?}", proof.challenge.to_str_radix(16));
+    println!("RESPONSE: {:?}", proof.response.to_str_radix(16));
+    
     println!();
 
     
