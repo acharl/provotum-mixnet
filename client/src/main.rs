@@ -53,7 +53,7 @@ fn main() {
                 task::block_on(async {
                     let result = task::spawn(change_vote_phase(t.vote, t.phase)).await;
                     match result {
-                        Ok(_) => println!("successfully update vote phase!"),
+                        Ok(_) => println!("successfully updated vote phase!"),
                         Err(err) => println!("failed to set vote: {:?}", err),
                     }
                 });
