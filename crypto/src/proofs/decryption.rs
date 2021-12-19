@@ -2,15 +2,21 @@ use crate::{
     helper::Helper,
     types::{Cipher, ElGamalParams, ModuloOperations},
 };
-use alloc::vec::Vec;
+use alloc::{vec::Vec, string::String};
 use num_bigint::BigUint;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Debug, Hash)]
 pub struct DecryptPostBody {
-    pub decryption_proof: DecryptionProof,
+    pub decryption_proof: HexDecryptionProof,
     pub shares: Vec<Vec<u8>>
 } 
+
+#[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Debug, Hash)]
+pub struct HexDecryptionProof {
+    pub challenge: String,
+    pub response: String,
+}
 
 #[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Debug, Hash)]
 pub struct DecryptionProof {
