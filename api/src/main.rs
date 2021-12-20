@@ -121,6 +121,10 @@ async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, St
     };
 
 
+    println!("RESPONSE: {:?}", decryption_proof.response.to_str_radix(16));
+
+
+
     let signer = PairSigner::<NodeTemplateRuntime, Pair>::new(sealer);
     let response = submit_partial_decryptions(
         &client,
