@@ -133,6 +133,8 @@ async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, St
         nr_of_shuffles,
     )
     .await.unwrap();
+    println!("response: {:?}", response.events[0].variant);
+
     HttpResponse::Ok().body("Successfully Submitted Partial Decryptions!")
 }
 
