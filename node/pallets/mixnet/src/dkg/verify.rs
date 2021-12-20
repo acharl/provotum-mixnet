@@ -76,9 +76,9 @@ pub fn verify_proof_and_store_decrypted_share<T: Trait>(
         .map(|s| BigUint::from_bytes_be(s))
         .collect::<Vec<BigUint>>();
 
-    debug::info!("params: {:?}", &params.into());
+    debug::info!("params: {:?}", &params);
     debug::info!("sealer_pk: {:?}", &sealer_pk);
-    debug::info!("proof: {:?}", &proof.into());
+    debug::info!("proof: {:?}", &proof);
     debug::info!("big_ciphers: {:?}", &big_ciphers);
     debug::info!("decrypted_shares: {:?}", &decrypted_shares);
     debug::info!("sealer_id: {:?}", &sealer_id);
