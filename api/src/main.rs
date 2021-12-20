@@ -115,12 +115,12 @@ async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, St
 
     
     let decryption_proof = DecryptionProof {
-        challenge: BigUint::from_bytes_be(&raw_decryption_proof.challenge.as_bytes()), 
-        response: BigUint::from_bytes_be(&raw_decryption_proof.response.as_bytes())
+        challenge: BigUint::from_str_radix(&raw_decryption_proof.challenge, 16), 
+        response: BigUint::from_str_radix(&raw_decryption_proof.response, 16), 
     };
 
-    println!("CHALLENGE: {:?}", decryption_proof.challenge.to_str_radix(16));
-    println!("RESPONSE: {:?}", decryption_proof.response.to_str_radix(16));
+    println!("CHALLENGE: {:?}", decryption_proof.challenge);
+    println!("RESPONSE: {:?}", decryption_proof.response);
 
     let signer = PairSigner::<NodeTemplateRuntime, Pair>::new(sealer);
     let response = submit_partial_decryptions(
