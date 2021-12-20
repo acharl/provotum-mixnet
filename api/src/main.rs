@@ -147,7 +147,7 @@ async fn main() -> std::io::Result<()> {
         .service(post_decrypt)
         .data(web::JsonConfig::default().limit(1024 * 1024 * 50))
     })
-    .bind(("0.0.0.0", 11111))?
+    .bind(("0.0.0.0", 12345))?
     .run()
     .await
 }
