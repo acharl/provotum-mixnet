@@ -1042,6 +1042,7 @@ dependencies = [
  "num-traits",
  "rand 0.7.3",
  "serde",
+ "serde_json",
 ]
 
 [[package]]

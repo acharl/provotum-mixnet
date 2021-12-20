@@ -2,14 +2,15 @@ use actix_web::{web,get,  post, App, HttpResponse, HttpServer, Responder, Result
 use substrate_subxt::{Client, PairSigner};
 use substrate_subxt::{ClientBuilder, Error, NodeTemplateRuntime};
 use hex_literal::hex;
-use pallet_mixnet::types::{Cipher, PublicKeyShare, DecryptedShareProof, Wrapper};
+use pallet_mixnet::types::{Cipher, PublicKeyShare, Wrapper};
 use sp_keyring::{sr25519::sr25519::Pair, AccountKeyring};
 mod substrate;
 use substrate::rpc::{get_ciphers, store_public_key_share, submit_partial_decryptions};
 use crypto::{
-    proofs::decryption::{DecryptPostBody, HexDecryptionProof},
+    proofs::decryption::{DecryptPostBody, HexDecryptionProof, DecryptionProof},
     types::Cipher as BigCipher,
 };
+use num_bigint::BigUint;
 
 
 fn get_sealer(sealer: String) -> (Pair, [u8; 32]) {
@@ -114,9 +115,9 @@ async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, St
 
 
     
-    let decryption_proof = DecryptedShareProof {
-        challenge: raw_decryption_proof.challenge.into_bytes(),
-        response: raw_decryption_proof.response.into_bytes()
+    let decryption_proof = DecryptionProof {
+        challenge: BigUint::from_bytes_be(&raw_decryption_proof.challenge.as_bytes()), 
+        response: BigUint::from_bytes_be(&raw_decryption_proof.response.as_bytes())
     };
 
 
@@ -127,7 +128,7 @@ async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, St
         vote_id,
         topic_id,
         decrypt_post_body.shares.clone(),
-        decryption_proof,
+        decryption_proof.into(),
         nr_of_shuffles,
     )
     .await.unwrap();
