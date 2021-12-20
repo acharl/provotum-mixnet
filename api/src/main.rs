@@ -97,8 +97,7 @@ async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, St
     // This is what a DecryptionProof proof looks like when
     // we log it as 
     // 
-    // println!("CHALLENGE: {:?}", proof.challenge.to_str_radix(16));
-    // println!("RESPONSE: {:?}", proof.response.to_str_radix(16));
+
     // 
     // DecryptionProof {
     //     CHALLENGE: "5f8d6b6156655e054edbc45c4748152d621d3e965ac734db12ed0dd89a35cf4c92905a1e0c3d08c794d4640f1139f6cb0d8d9f3823cd78ca159a0072c836cf12"
@@ -120,10 +119,8 @@ async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, St
         response: BigUint::from_bytes_be(&raw_decryption_proof.response.as_bytes())
     };
 
-
+    println!("CHALLENGE: {:?}", decryption_proof.challenge.to_str_radix(16));
     println!("RESPONSE: {:?}", decryption_proof.response.to_str_radix(16));
-
-
 
     let signer = PairSigner::<NodeTemplateRuntime, Pair>::new(sealer);
     let response = submit_partial_decryptions(
