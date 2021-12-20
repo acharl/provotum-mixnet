@@ -102,6 +102,22 @@ pub async fn decrypt(
         .map(|c| c.to_bytes_be())
         .collect::<Vec<Vec<u8>>>();
 
+    println!();
+    println!("PK: {:?}", pk.h);
+    println!();
+
+    println!("SHARES: {:?}", shares);
+    println!();
+
+    println!("PARAMS: {:?}", params);
+    println!();
+
+    println!("ENCRYPTIONS: {:?}", encryptions);
+    println!();
+
+    println!("DECRYPTIONS: {:?}", partial_decryptions);
+    println!();
+
     // create proof using public and private key share
     let r = Random::get_random_less_than(&params.q());
     let proof = DecryptionProof::generate(
@@ -113,15 +129,6 @@ pub async fn decrypt(
         partial_decryptions,
         &sealer_id,
     );
-
-    println!();
-    println!("CHALLENGE: {:?}", proof.challenge.to_str_radix(16));
-    println!("RESPONSE: {:?}", proof.response.to_str_radix(16));
-    
-    println!();
-
-    
-
  
     // submit the partial decryption + proof
     let signer = PairSigner::<NodeTemplateRuntime, Pair>::new(sealer);
