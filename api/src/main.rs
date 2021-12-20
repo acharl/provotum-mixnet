@@ -115,8 +115,8 @@ async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, St
 
     
     let decryption_proof = DecryptionProof {
-        challenge: BigUint::from_str_radix(&raw_decryption_proof.challenge, 16), 
-        response: BigUint::from_str_radix(&raw_decryption_proof.response, 16), 
+        challenge: BigUint::from_str_radix(&raw_decryption_proof.challenge, 16).unwrap(), 
+        response: BigUint::from_str_radix(&raw_decryption_proof.response, 16).unwrap(), 
     };
 
     println!("CHALLENGE: {:?}", decryption_proof.challenge);
