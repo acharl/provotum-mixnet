@@ -118,8 +118,8 @@ pub async fn decrypt(
    
 
     // create proof using public and private key share
-    // let r = Random::get_random_less_than(&params.q());
-    let r = BigUint::one();
+    let r = Random::get_random_less_than(&params.q());
+    // let r = BigUint::one();
 
     let proof = DecryptionProof::generate(
         &params,
