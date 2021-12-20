@@ -11,7 +11,7 @@ use crypto::{
     types::Cipher as BigCipher,
 };
 use num_bigint::BigUint;
-
+use num_traits::Num;
 
 fn get_sealer(sealer: String) -> (Pair, [u8; 32]) {
     // get the sealer and sealer_id
