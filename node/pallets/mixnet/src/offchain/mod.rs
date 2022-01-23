@@ -117,7 +117,7 @@ impl<T: Trait> Module<T> {
 
                 // get the signer for the transaction
                 let signer = Signer::<T, T::AuthorityId>::any_account();
-
+                
                 // if it's the current_sealer's turn, then shuffle + submit ciphers + proof
                 // else, submit empty transaction
                 let transaction_response = signer.send_signed_transaction(|_acct| {

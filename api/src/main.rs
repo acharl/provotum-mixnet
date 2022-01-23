@@ -40,7 +40,7 @@ async fn init() -> Result<Client<NodeTemplateRuntime>, Error> {
 #[post("/keygen/{vote}/{sealer}")] // <- define path parameters
 async fn keygen(web::Path((vote, sealer)): web::Path<(String, String)>, pk_share: web::Json<PublicKeyShare>) -> impl Responder {
     let client = init().await.unwrap();
-    let (sealer, sealer_id): (Pair, [u8; 32]) = get_sealer(sealer.to_string()); 
+    let (sealer, _sealer_id): (Pair, [u8; 32]) = get_sealer(sealer.to_string()); 
 
      let vote_id = vote.as_bytes().to_vec();
  
@@ -56,23 +56,10 @@ async fn keygen(web::Path((vote, sealer)): web::Path<(String, String)>, pk_share
      HttpResponse::Ok().body("Successfully Stored Key Share!")
 }
 
-// #[get("/decrypt/{vote}/{question}")]
-// async fn decrypt(web::Path((vote, question)): web::Path<(String, String)>) -> Result<impl Responder> {
-//     let client = init().await.unwrap();
-//     let vote_id = vote.as_bytes().to_vec();
-//     let topic_id = question.as_bytes().to_vec();
-//     let nr_of_shuffles = 3;
-//     let raw_encryptions: Vec<Cipher> = get_ciphers(&client, topic_id.clone(), nr_of_shuffles).await.unwrap();
-//     let encryptions: Vec<BigCipher> = Wrapper(raw_encryptions).into();
-
-//     Ok(web::Json(encryptions))
-// }
-
 
 #[get("/decrypt/{vote}/{question}")]
-async fn get_decrypt(web::Path((vote, question)): web::Path<(String, String)>) -> Result<impl Responder> {
+async fn get_decrypt(web::Path((_vote, question)): web::Path<(String, String)>) -> Result<impl Responder> {
     let client = init().await.unwrap();
-    let vote_id = vote.as_bytes().to_vec();
     let topic_id = question.as_bytes().to_vec();
     let nr_of_shuffles = 3;
     let raw_encryptions: Vec<Cipher> = get_ciphers(&client, topic_id.clone(), nr_of_shuffles).await.unwrap();
@@ -88,39 +75,16 @@ async fn post_decrypt(web::Path((vote, question, sealer)): web::Path<(String, St
     // submit the partial decryption + proof
     let client = init().await.unwrap();
 
-    let (sealer, sealer_id): (Pair, [u8; 32]) = get_sealer(sealer);
+    let (sealer, _sealer_id): (Pair, [u8; 32]) = get_sealer(sealer);
     let vote_id = vote.as_bytes().to_vec();
     let topic_id = question.as_bytes().to_vec();
     let nr_of_shuffles = 3;
-
-
-    // This is what a DecryptionProof proof looks like when
-    // we log it as 
-    // 
-
-    // 
-    // DecryptionProof {
-    //     CHALLENGE: "5f8d6b6156655e054edbc45c4748152d621d3e965ac734db12ed0dd89a35cf4c92905a1e0c3d08c794d4640f1139f6cb0d8d9f3823cd78ca159a0072c836cf12"
-    //     RESPONSE: "73f9c243fc22ed0c47024839b0bc66c0a9514ff50f5d95804dce0653df2b3a8c551c9cb417a2136c60e2c421b172ea74139af3bbb11ffa38e34fe1f0c3be5d1b8f6329a1ddfdd4bd6d585514cae5ac9429508622fbf5008c6ef2497b1126a86cb1ffcdd59d8fc0d4e562e466af1470e88e708c580fe4aa9112f2848780bd55bf7c92cc7a684bcced3be0e729c558103af50b74f6e29cbdf186666bf8af3b1e2ee84a92038c602b8c3eda835c158d1fb1df04d4ab7e9ce77b7fe010aa91c400c94a8b5c8af4876893561ecbc02d9c7eafd9efc964ad898a74c73cd3c53edfce94d5164c34bf07409c1494a5158123052de607ce93f2baf64f395aa1b9b26f00d"    
-    // }
-    // 
-    // Perhaps it would be ideal to pass the DecryptionProof with challenge and 
-    // response encoded as hex strings as above. 
-    // We could then simply convert it using from_str_radix()
-
-
-    
     let raw_decryption_proof: HexDecryptionProof = decrypt_post_body.decryption_proof.clone().into();
-
-
     
     let decryption_proof = DecryptionProof {
         challenge: BigUint::from_str_radix(&raw_decryption_proof.challenge, 16).unwrap(), 
         response: BigUint::from_str_radix(&raw_decryption_proof.response, 16).unwrap(), 
     };
-
-    println!("CHALLENGE: {:?}", decryption_proof.challenge);
-    println!("RESPONSE: {:?}", decryption_proof.response);
 
     let signer = PairSigner::<NodeTemplateRuntime, Pair>::new(sealer);
     let response = submit_partial_decryptions(
@@ -147,7 +111,7 @@ async fn main() -> std::io::Result<()> {
         .service(post_decrypt)
         .data(web::JsonConfig::default().limit(1024 * 1024 * 50))
     })
-    .bind(("0.0.0.0", 12345))?
+    .bind(("0.0.0.0", 10008))?
     .run()
     .await
 }

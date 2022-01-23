@@ -10,7 +10,7 @@ use sp_core::crypto::KeyTypeId;
 /// Defines application identifier for crypto keys of this module.
 ///
 /// Every module that deals with signatures needs to declare its unique identifier for its crypto keys.
-/// When an offchain worker is signing transactions it's going to request keys from type
+/// When an offchain worker is signing transactions it's going to request keys from type 
 /// `KeyTypeId` via the keystore to sign the transaction.
 /// The keys can be inserted manually via RPC (see `author_insertKey`).
 pub const KEY_TYPE: KeyTypeId = KeyTypeId(*b"demo");

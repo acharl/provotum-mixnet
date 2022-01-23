@@ -6,7 +6,7 @@ services:
   alice:
     container_name: alice
     image: ghcr.io/provotum/provotum-mixnet:latest
-    command: --chain=local --name Alice --base-path /tmp/alice --port 30333 --ws-port 9944 --rpc-port 9933 --execution Native
+    command: --chain=local --name Alice --base-path /tmp/alice --port 30333 --ws-port 9944 --rpc-port 9933 --execution Native # change 30333, 30334, 30335 to start node from scratch
     network_mode: host
     # network_mode: bridge
     # ports: # HOST_PORT:CONTAINER_PORT
@@ -19,7 +19,7 @@ services:
   bob:
     container_name: bob
     image: ghcr.io/provotum/provotum-mixnet:latest
-    command: --chain=local --bob --validator --base-path /tmp/bob --port 30334 --ws-port 9945 --rpc-port 9934 --execution Native
+    command: --chain=local --bob --validator --base-path /tmp/bob --port 30334 --ws-port 9945 --rpc-port 9934 --execution Native 
     network_mode: host
     # network_mode: bridge
     # ports:

@@ -25,6 +25,7 @@ async fn init() -> Result<Client<NodeTemplateRuntime>, Error> {
 }
 
 fn get_sealer(sealer: String) -> (Pair, [u8; 32]) {
+    
     // get the sealer and sealer_id
     if sealer == "bob" {
         return (
@@ -101,25 +102,9 @@ pub async fn decrypt(
         .iter()
         .map(|c| c.to_bytes_be())
         .collect::<Vec<Vec<u8>>>();
-
-    // println!();
-    // println!("PK: {:?}", pk.h);
-    // println!();
-
-    // println!("SHARES: {:?}", shares);
-    // println!();
-
-    // println!("PARAMS: {:?}", params);
-    // println!();
-
-    // println!("ENCRYPTIONS: {:?}", encryptions);
-    // println!();
-
    
-
     // create proof using public and private key share
     let r = Random::get_random_less_than(&params.q());
-    // let r = BigUint::one();
 
     let proof = DecryptionProof::generate(
         &params,
@@ -130,10 +115,6 @@ pub async fn decrypt(
         partial_decryptions,
         &sealer_id,
     );
-
-    println!("CHALLENGE: {:?}", proof.challenge.to_str_radix(16));
-    println!("RESPONSE: {:?}", proof.challenge.to_str_radix(16));
-    println!();
  
     // submit the partial decryption + proof
     let signer = PairSigner::<NodeTemplateRuntime, Pair>::new(sealer);
